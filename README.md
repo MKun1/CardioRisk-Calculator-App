@@ -1,120 +1,66 @@
-CardioRisk Calculator
+# 🫀 CardioRisk Calculator
+**Cardiac Risk Prediction Web App** built with Flask and scikit-learn.
 
-Live App: https://cardiorisk-calculator-app.onrender.com/
+Predict heart disease risk based on clinical values through an interactive interface featuring a risk gauge, top contributing factors, and model confidence scores.
 
-A Cardiac Risk Prediction Web App built with Flask and scikit-learn. This tool predicts the likelihood of heart disease based on clinical values and presents an interactive, visually appealing result page with:
+> [!WARNING]
+> **Disclaimer:** This application is for **educational purposes only**. It is not a clinical diagnostic tool and should not be used as a substitute for professional medical advice.
 
-Risk gauge animation
-Top contributing factors
-Model confidence bars
-Detailed input summary
-Risk scale reference
+---
 
-⚠️ Disclaimer: This is an educational tool only and not a clinical diagnosis. Always consult a healthcare professional for medical advice.
+## ✨ Features
+- **Accurate Predictions:** Classifies cardiac risk as **Low**, **Moderate**, or **High**.
+- **Interpretability:** Displays the top clinical factors contributing to the result.
+- **Data Visualization:** Animated risk gauge and confidence bars for intuitive feedback.
+- **Reporting:** Summarizes user input and allows you to **Print/Save results as PDF**.
+- **Responsive Design:** Fully optimized for desktop and mobile browsers.
 
-Table of Contents
-Features
-Demo
-Tech Stack
-Installation
-Usage
-Project Structure
-Deployment
-Contributing
-License
-Features
-Predicts cardiac risk: Low, Moderate, High
-Displays top contributing factors (from Decision Tree Gini reduction)
-Animated risk gauge visualization
-Shows model confidence with probability bars
-Summarizes user input values with explanations
-Print or save results as PDF
-Fully responsive layout
-Demo
+## 🛠 Tech Stack
+- **Backend:** Python, Flask
+- **ML Model:** scikit-learn (Decision Tree Classifier)
+- **Frontend:** HTML5, CSS3, JavaScript
+- **Deployment:** Render
 
-Visit the live app: https://cardiorisk-calculator-app.onrender.com
+## 🚀 Installation & Local Setup
 
-Tech Stack
-Backend: Python, Flask
-ML Model: scikit-learn (Decision Tree Classifier)
-Frontend: HTML, CSS, JavaScript (ES6)
-Deployment: Render
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/<your-username>/cardiorisk-app.git
+   cd cardiorisk-app
 
-Dependencies (also in requirements.txt):
 
-blinker==1.9.0
-click==8.3.1
-colorama==0.4.6
-Flask==3.1.3
-itsdangerous==2.2.0
-Jinja2==3.1.6
-joblib==1.5.3
-MarkupSafe==3.0.3
-numpy==2.4.3
-pandas==3.0.1
-python-dateutil==2.9.0.post0
-scikit-learn==1.8.0
-scipy==1.17.1
-six==1.17.0
-threadpoolctl==3.6.0
-tzdata==2025.3
-Werkzeug==3.1.7
-gunicorn==22.2.0
-Installation
-Clone the repository:
-git clone https://github.com/<your-username>/cardiorisk-app.git
-cd cardiorisk-app
-Create a virtual environment:
+
+
+
+
+
+# Linux/Mac
 python -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
-Install dependencies:
+source venv/bin/activate
+
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+
+# Install dependencies:
+
 pip install -r requirements.txt
-Usage
-Start the Flask app locally:
+
+
+# 💻 Usage
+# To run the application locally using Gunicorn:
+
 gunicorn app:app
 
-Replace app:app with main:app if your main file is main.py.
 
-Open your browser at http://127.0.0.1:8000
-Enter your clinical values and click Predict.
-View your cardiac risk result page with animated gauge and top factors.
-Project Structure
-cardiorisk-app/
-├── app.py                  # Flask application entry point
-├── requirements.txt        # Python dependencies
-├── templates/
-│   └── result.html         # Results page template (Jinja2)
-├── static/
-│   ├── css/
-│   │   └── style.css
-│   ├── js/
-│   │   └── result.js
-│   └── images/
-│       └── favicon.png
-├── models/
-│   └── decision_tree.pkl   # Trained ML model
-├── README.md
-└── .gitignore
-Deployment
-
-This project is deployed on Render:
-
-Connect your GitHub repo to Render
-Set Environment → Python
+Open your browser at http://127.0.0.1:8000, enter the clinical values, and view your results.
+# 🌐 Deployment
+This app is configured for easy deployment on Render:
 Build Command: pip install -r requirements.txt
 Start Command: gunicorn app:app
-Your app will be live at: https://cardiorisk-calculator-app.onrender.com
+Live Demo: https://cardiorisk-calculator-app.onrender.com
+# 📄 License
+Distributed under the MIT License. See LICENSE for more information.
+© 2026 M.Kundai
 
-⚠️ Ensure static asset paths in result.html use forward slashes / for Render compatibility.
-
-Contributing
-Fork the repository
-Create a new branch (git checkout -b feature-name)
-Make your changes
-Commit (git commit -m "Add feature")
-Push (git push origin feature-name)
-Open a Pull Request
-License
-
-MIT License © 2026 [Mduduzi Kundai]
