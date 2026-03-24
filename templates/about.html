@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About the Model — CardioRisk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="static\style.css">
+
+
+<link rel="icon" href="static\images\favicon.png" type="image/x-icon">
+
+
+
+</head>
+<body>
+
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-mark" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 4C9 4 5 8 5 13c0 2.5 1 4.8 2.6 6.5L14 26l6.4-6.5C22 17.8 23 15.5 23 13c0-5-4-9-9-9z" fill="currentColor" opacity="0.15"/>
+            <path d="M14 4C9 4 5 8 5 13c0 2.5 1 4.8 2.6 6.5L14 26l6.4-6.5C22 17.8 23 15.5 23 13c0-5-4-9-9-9z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M8 13h3l2-4 2 8 2-4h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">CardioRisk</span>
+      </a>
+      <nav class="header-nav">
+        <a href="/#how-it-works">How it works</a>
+
+        <a href="{{ url_for('about') }}">About the model</a>
+
+
+      </nav>
+    </div>
+  </header>
+
+  <main class="about-main">
+
+    <!-- Page hero -->
+    <section class="about-hero">
+      <div class="about-hero-inner">
+        <div class="hero-label">Model documentation</div>
+        <h1 class="about-title">About the<br/><em>prediction model</em></h1>
+        <p class="about-sub">
+          Everything about how this tool works — the data it was trained on,
+          the algorithms used, what the metrics mean, and what the model
+          cannot tell you.
+        </p>
+      </div>
+    </section>
+
+    <div class="about-body">
+
+      <!-- ── Section: Model performance ─────────────────────────── -->
+      <section class="about-section" id="performance">
+        <div class="section-label">01 — Performance</div>
+        <h2 class="section-title">Model performance</h2>
+        <p class="section-intro">
+          Both models were evaluated using 5-fold stratified cross-validation
+          on 630,000 training rows. The Decision Tree is used for live
+          predictions — it trains 47× faster and catches more disease cases.
+        </p>
+
+        <!-- Metric cards -->
+        <div class="metric-grid">
+          <div class="metric-card metric-card--highlight">
+            <div class="metric-val">88.5%</div>
+            <div class="metric-name">Accuracy</div>
+            <div class="metric-desc">Correct predictions overall</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">87.0%</div>
+            <div class="metric-name">F1-Score</div>
+            <div class="metric-desc">Harmonic mean of precision &amp; recall</div>
+          </div>
+          <div class="metric-card metric-card--highlight">
+            <div class="metric-val">0.9525</div>
+            <div class="metric-name">ROC-AUC</div>
+            <div class="metric-desc">Discriminative ability across all thresholds</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">85.9%</div>
+            <div class="metric-name">Recall</div>
+            <div class="metric-desc">Disease cases correctly identified</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">88.1%</div>
+            <div class="metric-name">Precision</div>
+            <div class="metric-desc">Positive predictions that are correct</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">±0.001</div>
+            <div class="metric-name">Std deviation</div>
+            <div class="metric-desc">Across 5 cross-validation folds</div>
+          </div>
+        </div>
+
+        <!-- Model comparison table -->
+        <div class="compare-wrap">
+          <div class="compare-label">Head-to-head: Logistic Regression vs Decision Tree</div>
+          <div class="compare-table-wrap">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Logistic Regression</th>
+                  <th class="col-winner">Decision Tree <span class="winner-badge">Used live</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Accuracy</td>
+                  <td>88.49%</td>
+                  <td class="col-winner">88.16%</td>
+                </tr>
+                <tr>
+                  <td>F1-Score</td>
+                  <td>87.00%</td>
+                  <td class="col-winner">86.65%</td>
+                </tr>
+                <tr>
+                  <td>Recall</td>
+                  <td>85.92%</td>
+                  <td class="col-winner">85.75%</td>
+                </tr>
+                <tr>
+                  <td>ROC-AUC</td>
+                  <td>0.9525</td>
+                  <td class="col-winner">0.9496</td>
+                </tr>
+                <tr class="row-highlight">
+                  <td>False negatives <span class="td-note">(missed disease)</span></td>
+                  <td>7,956</td>
+                  <td class="col-winner">7,790 <span class="td-win">166 fewer</span></td>
+                </tr>
+                <tr class="row-highlight">
+                  <td>Training time per fold</td>
+                  <td>250s</td>
+                  <td class="col-winner">5.3s <span class="td-win">47× faster</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="compare-note">
+            The Decision Tree wins on the two metrics that matter most for a
+            screening tool: fewer missed diagnoses and faster inference.
+            Logistic Regression has a marginal edge on aggregate accuracy.
+          </p>
+        </div>
+      </section>
+
+      <!-- ── Section: Feature importance ────────────────────────── -->
+      <section class="about-section" id="features">
+        <div class="section-label">02 — Features</div>
+        <h2 class="section-title">What drives predictions</h2>
+        <p class="section-intro">
+          Feature importance scores from the Decision Tree show how much
+          each variable contributes to reducing prediction uncertainty
+          across all 630,000 training samples. Values sum to 1.0.
+        </p>
+
+        <div class="importance-chart" id="importance-chart" aria-label="Feature importance bar chart">
+          <!-- Bars rendered by about.js -->
+        </div>
+
+        <div class="feature-insight-grid">
+          <div class="feature-insight feature-insight--strong">
+            <div class="fi-label">Strongest protective factor</div>
+            <div class="fi-feature">Thallium — Normal (3)</div>
+            <div class="fi-detail">
+              Patients with a normal thallium result are the first branch in
+              the Decision Tree — immediately routed low-risk before any other
+              feature is considered.
+            </div>
+          </div>
+          <div class="feature-insight feature-insight--risk">
+            <div class="fi-label">Strongest risk indicator</div>
+            <div class="fi-feature">Chest pain type 4 — Asymptomatic</div>
+            <div class="fi-detail">
+              Counter-intuitively, <em>no</em> chest pain is the highest-risk
+              type. 69.7% of asymptomatic patients in training data had disease.
+            </div>
+          </div>
+          <div class="feature-insight feature-insight--weak">
+            <div class="fi-label">Near-zero predictors</div>
+            <div class="fi-feature">Blood pressure &amp; fasting blood sugar</div>
+            <div class="fi-detail">
+              BP had a correlation of −0.01 with the target. Both features
+              are retained but contribute negligible signal in this dataset.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section: Dataset ────────────────────────────────────── -->
+      <section class="about-section" id="dataset">
+        <div class="section-label">03 — Dataset</div>
+        <h2 class="section-title">Training data</h2>
+        <p class="section-intro">
+          The model was trained on a large-scale augmented clinical dataset
+          derived from the UCI Heart Disease repository.
+        </p>
+
+        <div class="dataset-grid">
+          <div class="dataset-stat">
+            <span class="ds-num">630,000</span>
+            <span class="ds-label">Training rows</span>
+          </div>
+          <div class="dataset-stat">
+            <span class="ds-num">270,000</span>
+            <span class="ds-label">Test rows</span>
+          </div>
+          <div class="dataset-stat">
+            <span class="ds-num">13</span>
+            <span class="ds-label">Clinical features</span>
+          </div>
+          <div class="dataset-stat">
+            <span class="ds-num">55 / 45</span>
+            <span class="ds-label">Class balance %</span>
+          </div>
+        </div>
+
+        <!-- Feature glossary table -->
+        <div class="glossary-wrap">
+          <table class="glossary-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Type</th>
+                <th>Range / values</th>
+                <th>Importance tier</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Thallium</strong></td>
+                <td><span class="type-badge type-nominal">Nominal</span></td>
+                <td>3 · 6 · 7</td>
+                <td><span class="tier tier-high">Very strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>Chest pain type</strong></td>
+                <td><span class="type-badge type-nominal">Nominal</span></td>
+                <td>1 · 2 · 3 · 4</td>
+                <td><span class="tier tier-high">Very strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>Number of vessels fluro</strong></td>
+                <td><span class="type-badge type-ordinal">Ordinal</span></td>
+                <td>0 – 3</td>
+                <td><span class="tier tier-high">Very strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>Max heart rate</strong></td>
+                <td><span class="type-badge type-cont">Continuous</span></td>
+                <td>71 – 202 bpm</td>
+                <td><span class="tier tier-high">Strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>Exercise angina</strong></td>
+                <td><span class="type-badge type-binary">Binary</span></td>
+                <td>Yes · No</td>
+                <td><span class="tier tier-high">Strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>ST depression</strong></td>
+                <td><span class="type-badge type-cont">Continuous</span></td>
+                <td>0.0 – 6.2 mm</td>
+                <td><span class="tier tier-high">Strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>Slope of ST</strong></td>
+                <td><span class="type-badge type-ordinal">Ordinal</span></td>
+                <td>1 · 2 · 3</td>
+                <td><span class="tier tier-high">Strong</span></td>
+              </tr>
+              <tr>
+                <td><strong>Sex</strong></td>
+                <td><span class="type-badge type-binary">Binary</span></td>
+                <td>Male · Female</td>
+                <td><span class="tier tier-mid">Moderate</span></td>
+              </tr>
+              <tr>
+                <td><strong>Age</strong></td>
+                <td><span class="type-badge type-cont">Continuous</span></td>
+                <td>29 – 77 years</td>
+                <td><span class="tier tier-mid">Moderate</span></td>
+              </tr>
+              <tr>
+                <td><strong>EKG results</strong></td>
+                <td><span class="type-badge type-nominal">Nominal</span></td>
+                <td>0 · 1 · 2</td>
+                <td><span class="tier tier-mid">Moderate</span></td>
+              </tr>
+              <tr>
+                <td><strong>Cholesterol</strong></td>
+                <td><span class="type-badge type-cont">Continuous</span></td>
+                <td>126 – 564 mg/dl</td>
+                <td><span class="tier tier-low">Weak</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fasting blood sugar</strong></td>
+                <td><span class="type-badge type-binary">Binary</span></td>
+                <td>&gt;120 mg/dl · No</td>
+                <td><span class="tier tier-low">Very weak</span></td>
+              </tr>
+              <tr>
+                <td><strong>Blood pressure</strong></td>
+                <td><span class="type-badge type-cont">Continuous</span></td>
+                <td>94 – 200 mm Hg</td>
+                <td><span class="tier tier-low">Near zero</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Section: Pipeline ───────────────────────────────────── -->
+      <section class="about-section" id="pipeline">
+        <div class="section-label">04 — Pipeline</div>
+        <h2 class="section-title">How the model was built</h2>
+        <p class="section-intro">
+          The full ML pipeline — from raw CSV to live prediction — in eight stages.
+        </p>
+
+        <div class="pipeline-steps">
+          <div class="pipeline-step">
+            <div class="ps-num">01</div>
+            <div class="ps-content">
+              <div class="ps-title">Data loading &amp; inspection</div>
+              <div class="ps-detail">630k rows loaded. Zero missing values confirmed. Target column decoded from "Presence"/"Absence" strings to binary 0/1.</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">02</div>
+            <div class="ps-content">
+              <div class="ps-title">Exploratory data analysis</div>
+              <div class="ps-detail">Distribution plots, class-stratified histograms, categorical disease-rate tables, and a Pearson correlation matrix across all 13 features.</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">03</div>
+            <div class="ps-content">
+              <div class="ps-title">Preprocessing</div>
+              <div class="ps-detail">Three nominal columns one-hot encoded (10 dummy columns). Five continuous columns StandardScaled. Scaler fitted on train only — applied identically to test.</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">04</div>
+            <div class="ps-content">
+              <div class="ps-title">Model training</div>
+              <div class="ps-detail">5-fold stratified cross-validation. Decision Tree: max_depth=10, min_samples_leaf=50. Logistic Regression: saga solver, 1000 iterations, C=1.0.</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">05</div>
+            <div class="ps-content">
+              <div class="ps-title">Evaluation</div>
+              <div class="ps-detail">Accuracy, F1, precision, recall, ROC-AUC across all folds. Confusion matrices on a 20% held-out validation slice (126,000 rows).</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">06</div>
+            <div class="ps-content">
+              <div class="ps-title">Feature importance</div>
+              <div class="ps-detail">Gini reduction scores from the Decision Tree. Absolute coefficients from Logistic Regression. Rank agreement table comparing both models.</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">07</div>
+            <div class="ps-content">
+              <div class="ps-title">Model serialisation</div>
+              <div class="ps-detail">Decision Tree, StandardScaler, feature column list, and nominal column list saved as .pkl files via Python's pickle module.</div>
+            </div>
+          </div>
+          <div class="pipeline-step">
+            <div class="ps-num">08</div>
+            <div class="ps-content">
+              <div class="ps-title">Web deployment</div>
+              <div class="ps-detail">Flask backend loads artefacts once at startup. Incoming form data preprocessed through the identical pipeline before prediction.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section: Limitations ────────────────────────────────── -->
+      <section class="about-section" id="limitations">
+        <div class="section-label">05 — Limitations</div>
+        <h2 class="section-title">What this tool cannot do</h2>
+
+        <div class="limitations-grid">
+          <div class="limitation-card">
+            <div class="lc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="lc-title">Not a medical diagnosis</div>
+            <div class="lc-text">This tool produces a statistical risk estimate — not a clinical diagnosis. A result of "High Risk" does not mean you have heart disease. Only a qualified clinician can diagnose.</div>
+          </div>
+          <div class="limitation-card">
+            <div class="lc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M6 4V3M10 4V3M14 4V3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <path d="M5 10h3M9 10h6M5 13h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="lc-title">Synthetic training data</div>
+            <div class="lc-text">The dataset is synthetically augmented from the UCI Heart Disease repository (~300 original records). While metrics are stable, real-world generalisation may differ.</div>
+          </div>
+          <div class="limitation-card">
+            <div class="lc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 3L3 17h14L10 3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                <path d="M10 8v4M10 14.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="lc-title">No hyperparameter tuning</div>
+            <div class="lc-text">Default regularisation and depth settings were used. A properly tuned Random Forest or XGBoost model would likely outperform this Decision Tree.</div>
+          </div>
+          <div class="limitation-card">
+            <div class="lc-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="8.5" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M7 10a3 3 0 006 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <circle cx="7.5" cy="7.5" r="1" fill="currentColor"/>
+                <circle cx="12.5" cy="7.5" r="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="lc-title">No probability calibration</div>
+            <div class="lc-text">The raw probability scores from the Decision Tree are not calibrated. For clinical use, Platt scaling or isotonic regression would be required to make probabilities trustworthy.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div class="about-cta">
+        <h2 class="cta-title">Ready to check your risk?</h2>
+        <p class="cta-sub">Fill in your clinical values and get an instant assessment.</p>
+        <a href="{{ url_for('index') }}" class="cta-btn">Go to the calculator</a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span class="footer-logo">CardioRisk</span>
+      <span class="footer-note">Built with scikit-learn · For educational use only · Not medical advice</span>
+    </div>
+  </footer>
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════════════
+   CardioRisk — about.js
+   Handles: animated feature importance bar chart,
+            scroll-triggered section reveals.
+   No external dependencies — plain ES6.
+   ═══════════════════════════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  // ── Feature importance data ────────────────────────────────────────
+  // Gini reduction scores from the trained Decision Tree.
+  // Grouped dummies (Thallium, Chest pain type) are summed for
+  // a cleaner "per feature" view — easier for a non-technical audience.
+
+  const FEATURES = [
+    { label: 'Thallium',               score: 0.534, tier: 'top' },
+    { label: 'Chest pain type',        score: 0.161, tier: 'top' },
+    { label: 'Vessels fluro',          score: 0.089, tier: 'top' },
+    { label: 'Max HR',                 score: 0.074, tier: 'top' },
+    { label: 'Slope of ST',            score: 0.042, tier: 'mid' },
+    { label: 'Exercise angina',        score: 0.034, tier: 'mid' },
+    { label: 'Sex',                    score: 0.022, tier: 'mid' },
+    { label: 'ST depression',          score: 0.018, tier: 'mid' },
+    { label: 'Age',                    score: 0.012, tier: 'mid' },
+    { label: 'EKG results',            score: 0.007, tier: 'low' },
+    { label: 'Cholesterol',            score: 0.004, tier: 'low' },
+    { label: 'FBS over 120',           score: 0.002, tier: 'low' },
+    { label: 'Blood pressure',         score: 0.001, tier: 'low' },
+  ];
+
+  // Max score for normalising bar widths to 100%
+  const MAX_SCORE = FEATURES[0].score;
+
+  // ── Build the chart ────────────────────────────────────────────────
+  function buildChart() {
+    const container = document.getElementById('importance-chart');
+    if (!container) return;
+
+    FEATURES.forEach(f => {
+      const pct     = ((f.score / MAX_SCORE) * 100).toFixed(1);
+      const display = (f.score * 100).toFixed(1) + '%';
+      const tierClass = `ic-bar--${f.tier === 'top' ? 'top' : f.tier === 'mid' ? 'mid' : 'low'}`;
+
+      const row = document.createElement('div');
+      row.className = 'ic-row';
+      row.innerHTML = `
+        <div class="ic-label" title="${f.label}">${f.label}</div>
+        <div class="ic-bar-wrap">
+          <div class="ic-bar ${tierClass}" data-pct="${pct}" style="width:0"></div>
+        </div>
+        <div class="ic-val">${display}</div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  // ── Animate bars on scroll into view ──────────────────────────────
+  // Bars start at width:0 and animate to their target percentage
+  // when the chart enters the viewport.
+
+  function animateBars() {
+    const chart = document.getElementById('importance-chart');
+    if (!chart) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Stagger each bar's animation with a small delay
+            const bars = entry.target.querySelectorAll('.ic-bar');
+            bars.forEach((bar, i) => {
+              setTimeout(() => {
+                bar.style.width = bar.dataset.pct + '%';
+              }, i * 60);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      observer.observe(chart);
+    } else {
+      // Fallback for browsers without IntersectionObserver
+      document.querySelectorAll('.ic-bar').forEach(bar => {
+        bar.style.width = bar.dataset.pct + '%';
+      });
+    }
+  }
+
+  // ── Scroll-triggered section reveals ──────────────────────────────
+  // Each .about-section fades up as it enters the viewport.
+
+  function initSectionReveal() {
+    if (!('IntersectionObserver' in window)) return;
+
+    const sections = document.querySelectorAll('.about-section');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity   = '1';
+          entry.target.style.transform = 'translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    sections.forEach((section, i) => {
+      section.style.opacity    = '0';
+      section.style.transform  = 'translateY(18px)';
+      section.style.transition = `opacity .55s ease ${i * 0.04}s, transform .55s ease ${i * 0.04}s`;
+      observer.observe(section);
+    });
+  }
+
+  // ── Pipeline step hover ────────────────────────────────────────────
+  // Highlights a pipeline step when hovered and marks the timeline dot.
+
+  function initPipelineHover() {
+    document.querySelectorAll('.pipeline-step').forEach(step => {
+      step.addEventListener('mouseenter', () => {
+        step.style.paddingLeft = '36px';
+      });
+      step.addEventListener('mouseleave', () => {
+        step.style.paddingLeft = '28px';
+      });
+      step.style.transition = 'padding-left .2s ease';
+    });
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────
+  buildChart();
+  animateBars();
+  initSectionReveal();
+  initPipelineHover();
+
+})();
+  </script>
+
+
+
+</body>
+</html>

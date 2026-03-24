@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Risk Result — CardioRisk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="static\style.css">
+ <link rel="icon" href="static\images\favicon.png" type="image/x-icon">
+
+
+</head>
+
+
+
+
+
+<body class="result-page result-{{ risk_level | lower }}">
+
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-mark" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 4C9 4 5 8 5 13c0 2.5 1 4.8 2.6 6.5L14 26l6.4-6.5C22 17.8 23 15.5 23 13c0-5-4-9-9-9z" fill="currentColor" opacity="0.15"/>
+            <path d="M14 4C9 4 5 8 5 13c0 2.5 1 4.8 2.6 6.5L14 26l6.4-6.5C22 17.8 23 15.5 23 13c0-5-4-9-9-9z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M8 13h3l2-4 2 8 2-4h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">CardioRisk</span>
+      </a>
+      <nav class="header-nav">
+        <a href="/#how-it-works">How it works</a>
+        <a href="/about">About the model</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="result-main">
+
+    <!-- ── Hero result band ─────────────────────────────────────── -->
+    <section class="result-hero">
+      <div class="result-hero-inner">
+
+        <div class="result-hero-left">
+          <div class="result-eyebrow">Prediction complete</div>
+          <h1 class="result-headline">
+            {% if risk_level == "Low" %}
+              Low cardiac<br/><em>risk detected.</em>
+            {% elif risk_level == "Moderate" %}
+              Moderate cardiac<br/><em>risk detected.</em>
+            {% else %}
+              Elevated cardiac<br/><em>risk detected.</em>
+            {% endif %}
+          </h1>
+          <p class="result-summary">
+            {% if risk_level == "Low" %}
+              Based on your clinical values, the model estimates a low
+              likelihood of heart disease. Continue regular health check-ups
+              and maintain a healthy lifestyle.
+            {% elif risk_level == "Moderate" %}
+              Your clinical profile shows some indicators associated with
+              heart disease risk. Consider discussing these results with a
+              healthcare professional.
+            {% else %}
+              Several of your clinical values are associated with elevated
+              heart disease risk. We strongly recommend consulting a
+              qualified healthcare professional for a full evaluation.
+            {% endif %}
+          </p>
+          <div class="result-disclaimer">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+              <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M6.5 5.5v3M6.5 4v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            Educational tool only — not a clinical diagnosis
+          </div>
+        </div>
+
+        <!-- Gauge -->
+        <div class="result-hero-right" aria-label="Risk probability gauge">
+          <div class="gauge-wrap">
+            <svg class="gauge-svg" viewBox="0 0 200 130" fill="none" aria-hidden="true">
+              <!-- Track arc -->
+              <path class="gauge-track"
+                d="M20 110 A90 90 0 0 1 180 110"
+                stroke-width="14" stroke-linecap="round" fill="none"/>
+              <!-- Fill arc — animated by JS -->
+              <path class="gauge-fill" id="gauge-fill"
+                d="M20 110 A90 90 0 0 1 180 110"
+                stroke-width="14" stroke-linecap="round" fill="none"
+                stroke-dasharray="283"
+                stroke-dashoffset="283"/>
+              <!-- Centre text -->
+              <text class="gauge-pct" id="gauge-pct"
+                x="100" y="95" text-anchor="middle"
+                font-family="'DM Serif Display', serif"
+                font-size="36">0%</text>
+              <text class="gauge-label-svg"
+                x="100" y="116" text-anchor="middle"
+                font-family="'DM Sans', sans-serif"
+                font-size="11">probability</text>
+            </svg>
+            <div class="gauge-risk-badge gauge-badge--{{ risk_level | lower }}">
+              {{ risk_level }} risk
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Content grid ─────────────────────────────────────────── -->
+    <div class="result-grid">
+
+      <!-- Left column -->
+      <div class="result-col-main">
+
+        <!-- Top factors -->
+        <div class="result-card" id="factors-card">
+          <div class="card-header-row">
+            <h2 class="card-title">Top contributing factors</h2>
+            <span class="card-subtitle">Features driving this prediction</span>
+          </div>
+          <div class="factors-list">
+            {% for factor in top_factors %}
+            <div class="factor-item factor-item--{{ loop.index }}">
+              <div class="factor-rank">{{ loop.index }}</div>
+              <div class="factor-text">{{ factor }}</div>
+              <div class="factor-bar-wrap">
+                <div class="factor-bar"
+                     style="--bar-width: {{ [100 - (loop.index0 * 28), 20] | max }}%">
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <p class="factors-note">
+            Importance calculated from Decision Tree Gini reduction,
+            weighted by your specific input values.
+          </p>
+        </div>
+
+        <!-- Input summary -->
+        <div class="result-card" id="inputs-card">
+          <div class="card-header-row">
+            <h2 class="card-title">Your input values</h2>
+            <a href="/" class="card-edit-link">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                <path d="M9 2l2 2-7 7H2V9l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+              </svg>
+              Edit values
+            </a>
+          </div>
+
+          <div class="inputs-grid">
+
+            <div class="input-row">
+              <span class="input-label">Age</span>
+              <span class="input-val">{{ raw.Age }} yrs</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Sex</span>
+              <span class="input-val">{{ "Male" if raw.Sex == 1 else "Female" }}</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Chest pain type</span>
+              <span class="input-val">
+                Type {{ raw['Chest pain type'] }}
+                {% if raw['Chest pain type'] == 1 %}<span class="input-note">Typical angina</span>
+                {% elif raw['Chest pain type'] == 2 %}<span class="input-note">Atypical angina</span>
+                {% elif raw['Chest pain type'] == 3 %}<span class="input-note">Non-anginal</span>
+                {% else %}<span class="input-note">Asymptomatic</span>{% endif %}
+              </span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Blood pressure</span>
+              <span class="input-val">{{ raw.BP }} mm Hg</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Cholesterol</span>
+              <span class="input-val">{{ raw.Cholesterol }} mg/dl</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Fasting blood sugar &gt;120</span>
+              <span class="input-val">{{ "Yes" if raw['FBS over 120'] == 1 else "No" }}</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">EKG results</span>
+              <span class="input-val">
+                {{ raw['EKG results'] }}
+                {% if raw['EKG results'] == 0 %}<span class="input-note">Normal</span>
+                {% elif raw['EKG results'] == 1 %}<span class="input-note">ST-T abnormality</span>
+                {% else %}<span class="input-note">LV hypertrophy</span>{% endif %}
+              </span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Max heart rate</span>
+              <span class="input-val">{{ raw['Max HR'] }} bpm</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Exercise angina</span>
+              <span class="input-val">{{ "Yes" if raw['Exercise angina'] == 1 else "No" }}</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">ST depression</span>
+              <span class="input-val">{{ raw['ST depression'] }} mm</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Slope of ST</span>
+              <span class="input-val">
+                {{ raw['Slope of ST'] }}
+                {% if raw['Slope of ST'] == 1 %}<span class="input-note">Upsloping</span>
+                {% elif raw['Slope of ST'] == 2 %}<span class="input-note">Flat</span>
+                {% else %}<span class="input-note">Downsloping</span>{% endif %}
+              </span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Vessels (fluoroscopy)</span>
+              <span class="input-val">{{ raw['Number of vessels fluro'] }}</span>
+            </div>
+            <div class="input-row">
+              <span class="input-label">Thallium result</span>
+              <span class="input-val">
+                {{ raw.Thallium }}
+                {% if raw.Thallium == 3 %}<span class="input-note">Normal</span>
+                {% elif raw.Thallium == 6 %}<span class="input-note">Fixed defect</span>
+                {% else %}<span class="input-note">Reversible defect</span>{% endif %}
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column -->
+      <div class="result-col-side">
+
+        <!-- Risk scale -->
+        <div class="result-card risk-scale-card">
+          <h2 class="card-title">Risk scale</h2>
+          <div class="risk-scale">
+            <div class="rs-segment rs-low {{ 'rs-active' if risk_level == 'Low' }}">
+              <div class="rs-dot"></div>
+              <div class="rs-info">
+                <div class="rs-label">Low</div>
+                <div class="rs-range">&lt; 35% probability</div>
+              </div>
+            </div>
+            <div class="rs-segment rs-moderate {{ 'rs-active' if risk_level == 'Moderate' }}">
+              <div class="rs-dot"></div>
+              <div class="rs-info">
+                <div class="rs-label">Moderate</div>
+                <div class="rs-range">35% – 65% probability</div>
+              </div>
+            </div>
+            <div class="rs-segment rs-high {{ 'rs-active' if risk_level == 'High' }}">
+              <div class="rs-dot"></div>
+              <div class="rs-info">
+                <div class="rs-label">High</div>
+                <div class="rs-range">&gt; 65% probability</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model confidence -->
+        <div class="result-card confidence-card">
+          <h2 class="card-title">Model confidence</h2>
+          <div class="confidence-row">
+            <span class="conf-label">Heart disease present</span>
+            <span class="conf-pct conf-pct--disease">{{ probability }}%</span>
+          </div>
+          <div class="conf-bar-wrap">
+            <div class="conf-bar conf-bar--disease"
+                 data-width="{{ probability }}"></div>
+          </div>
+          <div class="confidence-row" style="margin-top:14px">
+            <span class="conf-label">No heart disease</span>
+            <span class="conf-pct conf-pct--clear">{{ (100 - probability) | round(1) }}%</span>
+          </div>
+          <div class="conf-bar-wrap">
+            <div class="conf-bar conf-bar--clear"
+                 data-width="{{ (100 - probability) | round(1) }}"></div>
+          </div>
+          <p class="confidence-note">
+            Based on 5-fold cross-validated Decision Tree.
+            ROC-AUC: 0.9496 on 630k training rows.
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="result-card actions-card">
+          <h2 class="card-title">Next steps</h2>
+          <div class="actions-list">
+            <a href="/" class="action-btn action-btn--primary">
+              <span class="action-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </span>
+              Recalculate with new values
+            </a>
+            <a href="/about" class="action-btn action-btn--secondary">
+              <span class="action-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M8 7v5M8 5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+              </span>
+              About the model
+            </a>
+            <button class="action-btn action-btn--ghost" id="print-btn" onclick="window.print()">
+              <span class="action-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="3" y="1" width="10" height="7" rx="1" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M3 8H1v6h14V8h-2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                  <rect x="4" y="10" width="8" height="1.5" rx=".5" fill="currentColor" opacity=".4"/>
+                  <rect x="4" y="12.5" width="5" height="1.5" rx=".5" fill="currentColor" opacity=".4"/>
+                </svg>
+              </span>
+              Print / save as PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="result-card disclaimer-card">
+          <div class="disclaimer-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 2L2 16h14L9 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+              <path d="M9 7v4M9 13v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="disclaimer-text">
+            This result is generated by a machine learning model trained on
+            clinical data. It is <strong>not a medical diagnosis</strong> and
+            should not replace professional medical advice, diagnosis, or
+            treatment. Always consult a qualified healthcare professional
+            with any questions about your health.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span class="footer-logo">CardioRisk</span>
+      <span class="footer-note">Built with scikit-learn · For educational use only · Not medical advice</span>
+    </div>
+  </footer>
+
+
+
+  <!-- Pass probability to JS via data attribute -->
+  <!-- Pass probability to JS via data attribute -->
+<script>
+  window.RESULT_DATA = {
+    probability: {{ probability | tojson }},
+    riskLevel:   {{ risk_level | tojson }}
+  };
+</script>
+
+
+
+
+
+  <script>
+
+/* ═══════════════════════════════════════════════════════════════════
+   CardioRisk — result.js
+   Handles:
+     - SVG gauge arc animation (probability dial)
+     - Confidence bar animations
+     - Factor bar animations
+     - Animated probability counter (0 → actual value)
+   No external dependencies — plain ES6.
+   ═══════════════════════════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  const { probability, riskLevel } = window.RESULT_DATA;
+
+  // ── Gauge animation ────────────────────────────────────────────────
+  // The gauge is a half-circle arc (180° sweep).
+  // The full arc length at our radius is ≈ 283px (π × 90).
+  // stroke-dashoffset starts at 283 (fully hidden) and animates to
+  // 283 - (probability/100 × 283) = the filled portion.
+
+  function animateGauge() {
+    const fill    = document.getElementById('gauge-fill');
+    const pctText = document.getElementById('gauge-pct');
+    if (!fill || !pctText) return;
+
+    const ARC_LENGTH  = 283;
+    const targetOffset = ARC_LENGTH - (probability / 100) * ARC_LENGTH;
+
+    // Small delay so the page has rendered before the animation fires
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        fill.style.strokeDashoffset = targetOffset;
+      }, 200);
+    });
+
+    // Animated counter: 0 → probability over ~1.2s
+    animateCounter(pctText, 0, probability, 1200, v => `${v}%`);
+  }
+
+  // ── Confidence bars ────────────────────────────────────────────────
+  // Two bars: disease probability and no-disease probability.
+  // Both animate from width:0 to their target percentage.
+
+  function animateConfidenceBars() {
+    document.querySelectorAll('.conf-bar').forEach(bar => {
+      const target = bar.dataset.width;
+      // CSS transition handles the animation — we just set the width
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          bar.style.width = target + '%';
+        }, 400);
+      });
+    });
+  }
+
+  // ── Factor bars ────────────────────────────────────────────────────
+  // Each factor has a .factor-bar with a CSS variable --bar-width.
+  // We animate from 0 to that width with staggered delays.
+
+  function animateFactorBars() {
+    document.querySelectorAll('.factor-bar').forEach((bar, i) => {
+      const targetWidth = bar.style.getPropertyValue('--bar-width')
+        || getComputedStyle(bar).getPropertyValue('--bar-width');
+
+      // Reset to 0 first, then animate to target with stagger
+      bar.style.width = '0';
+      setTimeout(() => {
+        bar.style.width = targetWidth;
+      }, 500 + i * 150);
+    });
+  }
+
+  // ── Generic numeric counter animation ─────────────────────────────
+  // Counts from `start` to `end` over `duration` ms,
+  // calling `formatter(value)` to render each frame.
+
+  function animateCounter(el, start, end, duration, formatter) {
+    const startTime = performance.now();
+
+    function tick(now) {
+      const elapsed  = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(start + (end - start) * eased * 10) / 10;
+
+      el.textContent = formatter(value.toFixed(1).replace('.0', ''));
+
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // ── Card entrance animations ───────────────────────────────────────
+  // Stagger the main cards as they enter the viewport.
+
+  function initCardReveal() {
+    if (!('IntersectionObserver' in window)) return;
+
+    const cards = document.querySelectorAll('.result-card');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity   = '1';
+          entry.target.style.transform = 'translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    cards.forEach((card, i) => {
+      card.style.opacity    = '0';
+      card.style.transform  = 'translateY(14px)';
+      card.style.transition = `opacity .45s ease ${i * 0.07}s, transform .45s ease ${i * 0.07}s`;
+      observer.observe(card);
+    });
+  }
+
+  // ── Risk scale highlight pulse ─────────────────────────────────────
+  // Briefly pulses the active risk segment to draw the eye to it.
+
+  function pulseActiveSegment() {
+    const active = document.querySelector('.rs-active');
+    if (!active) return;
+
+    setTimeout(() => {
+      active.style.transition = 'background .3s ease, box-shadow .3s ease';
+      active.style.boxShadow  = '0 0 0 3px rgba(0,0,0,0.06)';
+
+      setTimeout(() => {
+        active.style.boxShadow = 'none';
+      }, 600);
+    }, 800);
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────
+  // Run everything after the DOM is ready.
+  // All animation entry points are here so execution order is clear.
+
+  animateGauge();
+  animateConfidenceBars();
+  animateFactorBars();
+  initCardReveal();
+  pulseActiveSegment();
+
+})();
+
+
+  </script>
+</body>
+</html>

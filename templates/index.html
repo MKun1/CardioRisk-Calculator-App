@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CardioRisk — Heart Disease Risk Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+<link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+</head>
+<body>
+
+  <!-- Background grid texture -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-mark" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 4C9 4 5 8 5 13c0 2.5 1 4.8 2.6 6.5L14 26l6.4-6.5C22 17.8 23 15.5 23 13c0-5-4-9-9-9z" fill="currentColor" opacity="0.15"/>
+            <path d="M14 4C9 4 5 8 5 13c0 2.5 1 4.8 2.6 6.5L14 26l6.4-6.5C22 17.8 23 15.5 23 13c0-5-4-9-9-9z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M8 13h3l2-4 2 8 2-4h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">CardioRisk</span>
+      </div>
+      <nav class="header-nav">
+        <a href="#how-it-works">How it works</a>
+        
+        <a href="{{ url_for('about') }}">About the model</a>
+
+
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-label">Clinical ML — Decision Tree · 88.5% Accuracy · AUC 0.95</div>
+        <h1 class="hero-title">
+          Know your<br/>
+          <em>cardiac risk</em><br/>
+          in seconds.
+        </h1>
+        <p class="hero-sub">
+          Enter your clinical values below. Our machine learning model — trained
+          on 630,000 patient records — returns an instant risk assessment with
+          the factors driving your result.
+        </p>
+        <div class="hero-disclaimer">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M7 6v4M7 4.5v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          For educational purposes only. Not a substitute for medical advice.
+        </div>
+      </div>
+      <div class="hero-stats" aria-hidden="true">
+        <div class="stat"><span class="stat-num">630k</span><span class="stat-label">training rows</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num">88.5%</span><span class="stat-label">accuracy</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num">0.95</span><span class="stat-label">ROC-AUC</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><span class="stat-num">13</span><span class="stat-label">clinical features</span></div>
+      </div>
+    </section>
+
+    <!-- Form -->
+    <section class="form-section" id="calculator">
+      <form action="/predict" method="POST" id="risk-form" novalidate>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap" aria-hidden="true">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-label" id="progress-label">0 of 13 fields completed</div>
+
+        <!-- ── Group 1: Demographics ─────────────────────────────── -->
+        <fieldset class="form-group" data-group="1">
+          <legend class="group-legend">
+            <span class="group-num">01</span>
+            Demographics
+          </legend>
+
+          <div class="field-grid">
+
+            <!-- Age -->
+            <div class="field" data-field="age">
+              <label class="field-label" for="age">
+                Age
+                <span class="field-unit">years</span>
+              </label>
+              <div class="slider-wrap">
+                <input type="range" id="age" name="age"
+                       min="29" max="77" value="54"
+                       class="slider" required />
+                <div class="slider-track-fill" id="age-fill"></div>
+              </div>
+              <div class="slider-meta">
+                <span class="slider-min">29</span>
+                <output class="slider-val" id="age-val">54</output>
+                <span class="slider-max">77</span>
+              </div>
+            </div>
+
+            <!-- Sex -->
+            <div class="field" data-field="sex">
+              <label class="field-label">Sex</label>
+              <div class="toggle-group">
+                <label class="toggle-opt">
+                  <input type="radio" name="sex" value="0" required />
+                  <span class="toggle-btn">Female</span>
+                </label>
+                <label class="toggle-opt">
+                  <input type="radio" name="sex" value="1" checked />
+                  <span class="toggle-btn">Male</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </fieldset>
+
+        <!-- ── Group 2: Cardiac Symptoms ─────────────────────────── -->
+        <fieldset class="form-group" data-group="2">
+          <legend class="group-legend">
+            <span class="group-num">02</span>
+            Cardiac symptoms
+          </legend>
+
+          <div class="field-grid">
+
+            <!-- Chest pain type -->
+            <div class="field full-width" data-field="chest_pain">
+              <label class="field-label" for="chest_pain">Chest pain type</label>
+              <div class="select-cards" id="chest-pain-cards">
+                <label class="select-card">
+                  <input type="radio" name="chest_pain" value="1" required />
+                  <span class="select-card-inner">
+                    <strong>Type 1</strong>
+                    <small>Typical angina</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="chest_pain" value="2" />
+                  <span class="select-card-inner">
+                    <strong>Type 2</strong>
+                    <small>Atypical angina</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="chest_pain" value="3" />
+                  <span class="select-card-inner">
+                    <strong>Type 3</strong>
+                    <small>Non-anginal pain</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="chest_pain" value="4" checked />
+                  <span class="select-card-inner">
+                    <strong>Type 4</strong>
+                    <small>Asymptomatic</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Exercise angina -->
+            <div class="field" data-field="exercise_angina">
+              <label class="field-label">Exercise-induced angina</label>
+              <div class="toggle-group">
+                <label class="toggle-opt">
+                  <input type="radio" name="exercise_angina" value="0" checked required />
+                  <span class="toggle-btn">No</span>
+                </label>
+                <label class="toggle-opt">
+                  <input type="radio" name="exercise_angina" value="1" />
+                  <span class="toggle-btn">Yes</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </fieldset>
+
+        <!-- ── Group 3: Vitals & Lab Values ──────────────────────── -->
+        <fieldset class="form-group" data-group="3">
+          <legend class="group-legend">
+            <span class="group-num">03</span>
+            Vitals &amp; lab values
+          </legend>
+
+          <div class="field-grid">
+
+            <!-- Blood Pressure -->
+            <div class="field" data-field="bp">
+              <label class="field-label" for="bp">
+                Resting blood pressure
+                <span class="field-unit">mm Hg</span>
+              </label>
+              <div class="slider-wrap">
+                <input type="range" id="bp" name="bp"
+                       min="94" max="200" value="130"
+                       class="slider" required />
+                <div class="slider-track-fill" id="bp-fill"></div>
+              </div>
+              <div class="slider-meta">
+                <span class="slider-min">94</span>
+                <output class="slider-val" id="bp-val">130</output>
+                <span class="slider-max">200</span>
+              </div>
+            </div>
+
+            <!-- Cholesterol -->
+            <div class="field" data-field="cholesterol">
+              <label class="field-label" for="cholesterol">
+                Serum cholesterol
+                <span class="field-unit">mg/dl</span>
+              </label>
+              <div class="slider-wrap">
+                <input type="range" id="cholesterol" name="cholesterol"
+                       min="126" max="564" value="245"
+                       class="slider" required />
+                <div class="slider-track-fill" id="cholesterol-fill"></div>
+              </div>
+              <div class="slider-meta">
+                <span class="slider-min">126</span>
+                <output class="slider-val" id="cholesterol-val">245</output>
+                <span class="slider-max">564</span>
+              </div>
+            </div>
+
+            <!-- Max HR -->
+            <div class="field" data-field="max_hr">
+              <label class="field-label" for="max_hr">
+                Maximum heart rate
+                <span class="field-unit">bpm</span>
+              </label>
+              <div class="slider-wrap">
+                <input type="range" id="max_hr" name="max_hr"
+                       min="71" max="202" value="152"
+                       class="slider" required />
+                <div class="slider-track-fill" id="max_hr-fill"></div>
+              </div>
+              <div class="slider-meta">
+                <span class="slider-min">71</span>
+                <output class="slider-val" id="max_hr-val">152</output>
+                <span class="slider-max">202</span>
+              </div>
+            </div>
+
+            <!-- ST Depression -->
+            <div class="field" data-field="st_depression">
+              <label class="field-label" for="st_depression">
+                ST depression
+                <span class="field-unit">mm</span>
+              </label>
+              <div class="slider-wrap">
+                <input type="range" id="st_depression" name="st_depression"
+                       min="0" max="62" value="7"
+                       class="slider" required />
+                <div class="slider-track-fill" id="st_depression-fill"></div>
+              </div>
+              <div class="slider-meta">
+                <span class="slider-min">0.0</span>
+                <output class="slider-val" id="st_depression-val">0.7</output>
+                <span class="slider-max">6.2</span>
+              </div>
+            </div>
+
+            <!-- FBS -->
+            <div class="field" data-field="fbs">
+              <label class="field-label">Fasting blood sugar &gt; 120 mg/dl</label>
+              <div class="toggle-group">
+                <label class="toggle-opt">
+                  <input type="radio" name="fbs" value="0" checked required />
+                  <span class="toggle-btn">No</span>
+                </label>
+                <label class="toggle-opt">
+                  <input type="radio" name="fbs" value="1" />
+                  <span class="toggle-btn">Yes</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </fieldset>
+
+        <!-- ── Group 4: Diagnostic Tests ─────────────────────────── -->
+        <fieldset class="form-group" data-group="4">
+          <legend class="group-legend">
+            <span class="group-num">04</span>
+            Diagnostic tests
+          </legend>
+
+          <div class="field-grid">
+
+            <!-- EKG results -->
+            <div class="field" data-field="ekg">
+              <label class="field-label" for="ekg">Resting EKG results</label>
+              <div class="select-cards" id="ekg-cards">
+                <label class="select-card">
+                  <input type="radio" name="ekg" value="0" checked required />
+                  <span class="select-card-inner">
+                    <strong>0</strong>
+                    <small>Normal</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="ekg" value="1" />
+                  <span class="select-card-inner">
+                    <strong>1</strong>
+                    <small>ST-T abnormality</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="ekg" value="2" />
+                  <span class="select-card-inner">
+                    <strong>2</strong>
+                    <small>LV hypertrophy</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Slope of ST -->
+            <div class="field" data-field="slope">
+              <label class="field-label" for="slope">Slope of peak ST segment</label>
+              <div class="select-cards">
+                <label class="select-card">
+                  <input type="radio" name="slope" value="1" checked required />
+                  <span class="select-card-inner">
+                    <strong>1</strong>
+                    <small>Upsloping</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="slope" value="2" />
+                  <span class="select-card-inner">
+                    <strong>2</strong>
+                    <small>Flat</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="slope" value="3" />
+                  <span class="select-card-inner">
+                    <strong>3</strong>
+                    <small>Downsloping</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Vessels fluro -->
+            <div class="field" data-field="vessels">
+              <label class="field-label" for="vessels">
+                Major vessels (fluoroscopy)
+                <span class="field-unit">count</span>
+              </label>
+              <div class="slider-wrap">
+                <input type="range" id="vessels" name="vessels"
+                       min="0" max="3" value="0" step="1"
+                       class="slider slider-stepped" required />
+                <div class="slider-track-fill" id="vessels-fill"></div>
+              </div>
+              <div class="slider-meta">
+                <span class="slider-min">0</span>
+                <output class="slider-val" id="vessels-val">0</output>
+                <span class="slider-max">3</span>
+              </div>
+            </div>
+
+            <!-- Thallium -->
+            <div class="field full-width" data-field="thallium">
+              <label class="field-label">Thallium stress test result</label>
+              <div class="select-cards">
+                <label class="select-card">
+                  <input type="radio" name="thallium" value="3" checked required />
+                  <span class="select-card-inner">
+                    <strong>3</strong>
+                    <small>Normal</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="thallium" value="6" />
+                  <span class="select-card-inner">
+                    <strong>6</strong>
+                    <small>Fixed defect</small>
+                  </span>
+                </label>
+                <label class="select-card">
+                  <input type="radio" name="thallium" value="7" />
+                  <span class="select-card-inner">
+                    <strong>7</strong>
+                    <small>Reversible defect</small>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </fieldset>
+
+        <!-- Submit -->
+        <div class="form-submit">
+          <button type="submit" class="submit-btn" id="submit-btn">
+            <span class="submit-btn-text">Calculate my risk</span>
+            <span class="submit-btn-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 9h12M10 4l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="submit-spinner" id="submit-spinner" aria-hidden="true"></span>
+          </button>
+          <p class="submit-note">Results appear instantly. No data is stored.</p>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-section" id="how-it-works">
+      <div class="how-inner">
+        <h2 class="how-title">How it works</h2>
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="how-step-num">01</div>
+            <h3>Enter your values</h3>
+            <p>Fill in 13 clinical measurements from your most recent check-up or test results.</p>
+          </div>
+          <div class="how-step-arrow" aria-hidden="true">→</div>
+          <div class="how-step">
+            <div class="how-step-num">02</div>
+            <h3>Model predicts</h3>
+            <p>A Decision Tree classifier — trained on 630,000 records — runs in milliseconds.</p>
+          </div>
+          <div class="how-step-arrow" aria-hidden="true">→</div>
+          <div class="how-step">
+            <div class="how-step-num">03</div>
+            <h3>Read your result</h3>
+            <p>Get a risk level, probability score, and the three factors contributing most to your result.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span class="footer-logo">CardioRisk</span>
+      <span class="footer-note">Built with scikit-learn · For educational use only · Not medical advice</span>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
+</body>
+</html>
